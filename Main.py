@@ -17,6 +17,7 @@ class Triangle:
         self.Points = list(Points)
         self.Triangles = list(Triangles)
 
+
 def rotate(a, b, c):
     return (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x)
 
@@ -271,6 +272,16 @@ def add_point_into_side(A_tr_, P):
     list_triangle.append(A3)
     list_triangle.append(A4)
 
+
+    if t1 != -1:
+        check_delone(A1, A1.Triangles[0])
+    if t2 != -1:
+        check_delone(A2, A2.Triangles[0])
+    if t3 != -1:
+        check_delone(A3, A3.Triangles[0])
+    if t4 != -1:
+        check_delone(A4, A4.Triangles[0])
+
     return A1
 
 
@@ -350,6 +361,7 @@ MVO_x = list()
 MVO_y = list()
 
 
+
 X, Y = array_create_for_draw(MVO)
 
 plt.plot(X, Y)
@@ -398,7 +410,6 @@ if math.ceil(m) == 1:
 for cnt in range(math.ceil(m)):
     array_for_y = list()
     while (i < len(Other_point) and Other_point[i].x < x_min + bc * (cnt+1)):
-        #cnt_x_m = m*(i+1)
 
         array_for_y.append(Other_point[i])
         i+=1
@@ -448,6 +459,5 @@ for cnt in range(math.ceil(m)):
 for i in range(len(list_triangle)):
     X2, Y2 = array_create_for_draw(list_triangle[i].Points)
     plt.plot(X2, Y2)
-
 
 plt.show()
