@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 import math
 
 
@@ -26,17 +25,17 @@ def grahamscan(List_Point):
     n = len(List_Point)  # число точек
     index_point = list(range(n))  # список номеров точек
 
-    for i in range(2, n):  # сортировка вставкой
+    for i in range(2, n):
         j = i
         while j > 1 and (
                 rotate(List_Point[index_point[0]], List_Point[index_point[j - 1]], List_Point[index_point[j]]) < 0):
             index_point[j], index_point[j - 1] = index_point[j - 1], index_point[j]
             j -= 1
-    S = [index_point[0], index_point[1]]  # создаем стек
+    S = [index_point[0], index_point[1]]
     for i in range(2, n):
         while rotate(List_Point[S[-2]], List_Point[S[-1]], List_Point[index_point[i]]) < 0:
-            del S[-1]  # pop(S)
-        S.append(index_point[i])  # push(S,P[i])
+            del S[-1]
+        S.append(index_point[i])
     return S
 
 
@@ -211,7 +210,6 @@ def add_point_into_side(A_tr_, P):
     points_for_3 = [P, A_tr_.Triangles[ind_3].Points[ind_1], A_tr_.Triangles[ind_3].Points[ind_2]]
     points_for_4 = [P, A_tr_.Triangles[ind_3].Points[ind_5], A_tr_.Triangles[ind_3].Points[ind_2]]
 
-
     t1 = search_triangle(A_tr_, A_tr_.Points[first_ind], A_tr_.Points[sec_ind])
     triangle_for_1 = [A_tr_.Triangles[t1], 0, 0] if t1 != -1 else [0, 0, 0]
 
@@ -272,7 +270,6 @@ def add_point_into_side(A_tr_, P):
     list_triangle.append(A3)
     list_triangle.append(A4)
 
-
     if t1 != -1:
         check_delone(A1, A1.Triangles[0])
     if t2 != -1:
@@ -306,7 +303,6 @@ def check_delone(A_def, B_def):
     if cos_a < 0 and cos_b < 0:
         swap_line(A_def, B_def, t_0, t_1, t_2, t_3)
         return
-
     if (not (cos_a < 0 and cos_b < 0)) and (not (cos_a >= 0 and cos_b >= 0) and bulge(t_0, t_1, t_2, t_3)):
         check_1 = (t_1.x - t_0.x) * (t_3.y - t_0.y) - (t_3.x - t_0.x) * (t_1.y - t_0.y)
         check_2 = (t_3.x - t_2.x) * (t_1.x - t_2.x) + (t_3.y - t_2.y) * (t_1.y - t_2.y)
@@ -331,13 +327,6 @@ with open("input.txt") as file:
 
 list_point = sorted(list_point, key=lambda k: [k.x, k.y])
 
-x_min = list_point[0].x
-x_max = list_point[len(list_point)-1].x
-
-
-m = abs(((0.16 * (y_max - y_min)) * len(list_point) / (x_max - x_min))**(1/2))
-
-
 index_MVO = grahamscan(list_point)
 MVO = list()
 Other_point = list()
@@ -351,19 +340,12 @@ for i in range(len(list_point)):
     print(list_point[i].x, list_point[i].y)
 
 
-
 print("-------------")
 for i in range(len(MVO)):
     print(MVO[i].x, MVO[i].y)
 MVO.append(MVO[0])
 
-MVO_x = list()
-MVO_y = list()
-
-
-
 X, Y = array_create_for_draw(MVO)
-
 plt.plot(X, Y)
 
 for i in range(len(MVO) - 1):
@@ -388,9 +370,9 @@ for i in range(len(MVO) - 1):
     if (i == len(MVO) - 2 and list_triangle[i].Triangles[0] != list_triangle[0]):
         list_triangle[i].Triangles[2] = list_triangle[0]
 
+
 if B != MVO[len(MVO)-2]:
     list_triangle[0].Triangles[0] = list_triangle[len(list_triangle) - 1]
-
 
 
 # проверка Делоне по всем построенным треугольникам
@@ -400,17 +382,21 @@ for i in range(len(list_triangle)):
             check_delone(list_triangle[i], list_triangle[i].Triangles[j])
 
 
+x_min = list_point[0].x
+x_max = list_point[len(list_point)-1].x
+
+
+m = abs(((0.16 * (y_max - y_min)) * len(list_point) / (x_max - x_min))**(1/2))
 
 i = 1
 triangle_for_check = list_triangle[0]
-a = math.ceil(m)
+#a = math.ceil(m)
 bc = (x_max - x_min) / math.ceil(m)
 if math.ceil(m) == 1:
     m+=1
 for cnt in range(math.ceil(m)):
     array_for_y = list()
     while (i < len(Other_point) and Other_point[i].x < x_min + bc * (cnt+1)):
-
         array_for_y.append(Other_point[i])
         i+=1
 
@@ -460,4 +446,6 @@ for i in range(len(list_triangle)):
     X2, Y2 = array_create_for_draw(list_triangle[i].Points)
     plt.plot(X2, Y2)
 
+
+plt.gca().set_aspect('equal', adjustable='box')
 plt.show()
