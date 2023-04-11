@@ -139,6 +139,17 @@ def swap_line(A_def, B_def, t_0_r, t_1_o, t_2_r, t_3_o):
                         tmp7.Triangles[tmp7.Triangles.index(B_def)] = A_def
 
 
+def Intersection(A, B, C, D):
+    v1 = (D.x-C.x)*(A.y-C.y)-(D.y-C.y)*(A.x-C.x)
+    v2 = (D.x-C.x)*(B.y-C.y)-(D.y-C.y)*(B.x-C.x)
+    v3 = (B.x-A.x)*(C.y-A.y)-(B.y-A.y)*(C.x-A.x)
+    v4 = (B.x-A.x)*(D.y-A.y)-(B.y-A.y)*(D.x-A.x)
+    return ((v1*v2<0) and (v3*v4<0))
+
+def judge(a,b,c,d):
+    if min(a.x,b.x) <= max(c.x,d.x) and min(c.y,d.y) <= max(a.y,b.y) and min(c.x,d.x) <= max(a.x,b.x) and min(a.y,b.y) <= max(c.y,d.y):
+        return True
+    return False
 
 def judge2(a,b,c,d):
     denominator = (d.y - c.y)*(a.x - b.x)-(d.x-c.x)*(a.y - b.y);
@@ -324,8 +335,8 @@ def check_delone(A_def, B_def):
     if cos_a < 0 and cos_b < 0:
         swap_line(A_def, B_def, t_0, t_1, t_2, t_3)
         return
-    if (not (cos_a < 0 and cos_b < 0)) and (not (cos_a >= 0 and cos_b >= 0) and bulge(t_0, t_1, t_2, t_3)):
-        check_1 = (t_1.x - t_2.x) * (t_3.y - t_2.y) - (t_1.x - t_2.x) * (t_3.y - t_2.y)
+    if (not (cos_a < 0 and cos_b < 0)) and (not (cos_a >= 0 and cos_b >= 0)) and bulge(t_0, t_1, t_2, t_3):
+        check_1 = (t_1.x - t_2.x) * (t_3.y - t_2.y) - (t_3.x - t_2.x) * (t_1.y - t_2.y)
         check_2 = (t_3.x - t_0.x) * (t_1.x - t_0.x) + (t_3.y - t_0.y) * (t_1.y - t_0.y)
         check_3 = (t_3.x - t_0.x) * (t_1.y - t_0.y) - (t_1.x - t_0.x) * (t_3.y - t_0.y)
         check_4 = (t_1.x - t_2.x) * (t_3.x - t_2.x) + (t_1.y - t_2.y) * (t_3.y - t_2.y)
@@ -411,10 +422,7 @@ m = abs(((0.16 * (y_max - y_min)) * len(list_point) / (x_max - x_min))**(1/2))
 
 i = 1
 triangle_for_check = list_triangle[0]
-#a = math.ceil(m)
 
-#if round(m) == 1:
-   # m+=1
 bc = (x_max - x_min) / round(m)
 for cnt in range(round(m)):
     array_for_y = list()
