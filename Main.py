@@ -119,12 +119,12 @@ def swap_line(A_def, B_def, t_0_r, t_1_o, t_2_r, t_3_o):
             if array_6 in A_def.Triangles[i].Points and array_6_0 in A_def.Triangles[i].Points and A_def.Triangles[i] != B_def:
                 tmp8 = A_def.Triangles[i]
 
-    if tmp7 == 0:
+    if tmp7 == 0 and tmp8 != 0:
         B_def.Triangles[B_def.Triangles.index(0)] = tmp8
         A_def.Triangles[A_def.Triangles.index(tmp8)] = 0
         tmp8.Triangles[tmp8.Triangles.index(A_def)] = B_def
 
-    if tmp8 == 0:
+    if tmp8 == 0 and tmp7 != 0:
         A_def.Triangles[A_def.Triangles.index(0)] = tmp7
         B_def.Triangles[B_def.Triangles.index(tmp7)] = 0
         tmp7.Triangles[tmp7.Triangles.index(B_def)] = A_def
@@ -139,15 +139,22 @@ def swap_line(A_def, B_def, t_0_r, t_1_o, t_2_r, t_3_o):
                         tmp7.Triangles[tmp7.Triangles.index(B_def)] = A_def
 
 
-def Intersection(A, B, C, D):
-    v1 = (D.x-C.x)*(A.y-C.y)-(D.y-C.y)*(A.x-C.x)
-    v2 = (D.x-C.x)*(B.y-C.y)-(D.y-C.y)*(B.x-C.x)
-    v3 = (B.x-A.x)*(C.y-A.y)-(B.y-A.y)*(C.x-A.x)
-    v4 = (B.x-A.x)*(D.y-A.y)-(B.y-A.y)*(D.x-A.x)
-    return ((v1*v2<0) and (v3*v4<0))
 
-def judge(a,b,c,d):
-    if min(a.x,b.x) <= max(c.x,d.x) and min(c.y,d.y) <= max(a.y,b.y) and min(c.x,d.x) <= max(a.x,b.x) and min(a.y,b.y) <= max(c.y,d.y):
+def judge2(a,b,c,d):
+    denominator = (d.y - c.y)*(a.x - b.x)-(d.x-c.x)*(a.y - b.y);
+
+    if (denominator == 0):
+        if  (a.x*b.y - b.x*a.y)*(d.x - c.x) - (c.x*d.y - d.x*c.y)*(b.x-a.x) == 0 and (a.x*b.y - b.x*a.y)*(d.y - c.y) - (c.x*d.y - d.x*c.y)*(b.y-a.y) == 0:
+            return True
+        else:
+            return  False
+    else:
+        numerator_a = (d.x - b.x)*(d.y - c.y) - (d.x - c.x)*(d.y - b.y);
+        numerator_b = (a.x - b.x)*(d.y - b.y) - (d.x - b.x)*(a.y - b.y);
+        Ua = numerator_a/denominator;
+        Ub = numerator_b/denominator;
+
+    if (Ua >=0 and Ua <=1 and Ub >=0 and Ub <=1):
         return True
     return False
 
@@ -312,16 +319,16 @@ def check_delone(A_def, B_def):
         if B_def.Points[i] not in A_def.Points:
             t_2 = B_def.Points[i]
 
-    cos_a = (t_1.x - t_0.x) * (t_2.x - t_0.x) + (t_1.y - t_0.y) * (t_2.y - t_0.y)
-    cos_b = (t_1.x - t_3.x) * (t_2.x - t_3.x) + (t_1.y - t_3.y) * (t_2.y - t_3.y)
+    cos_a = (t_1.x - t_2.x) * (t_3.x - t_2.x) + (t_1.y - t_2.y) * (t_3.y - t_2.y)
+    cos_b = (t_3.x - t_0.x) * (t_1.x - t_0.x) + (t_3.y - t_0.y) * (t_1.y - t_0.y)
     if cos_a < 0 and cos_b < 0:
         swap_line(A_def, B_def, t_0, t_1, t_2, t_3)
         return
     if (not (cos_a < 0 and cos_b < 0)) and (not (cos_a >= 0 and cos_b >= 0) and bulge(t_0, t_1, t_2, t_3)):
-        check_1 = (t_1.x - t_0.x) * (t_2.y - t_0.y) - (t_2.x - t_0.x) * (t_1.y - t_0.y)
-        check_2 = (t_2.x - t_3.x) * (t_1.x - t_3.x) + (t_2.y - t_3.y) * (t_1.y - t_3.y)
-        check_3 = (t_1.x - t_0.x) * (t_2.x - t_0.x) + (t_1.y - t_0.y) * (t_2.y - t_0.y)
-        check_4 = (t_2.x - t_3.x) * (t_1.y - t_3.y) - (t_1.x - t_3.x) * (t_2.y - t_3.y)
+        check_1 = (t_1.x - t_2.x) * (t_3.y - t_2.y) - (t_1.x - t_2.x) * (t_3.y - t_2.y)
+        check_2 = (t_3.x - t_0.x) * (t_1.x - t_0.x) + (t_3.y - t_0.y) * (t_1.y - t_0.y)
+        check_3 = (t_3.x - t_0.x) * (t_1.y - t_0.y) - (t_1.x - t_0.x) * (t_3.y - t_0.y)
+        check_4 = (t_1.x - t_2.x) * (t_3.x - t_2.x) + (t_1.y - t_2.y) * (t_3.y - t_2.y)
         a = (check_1 * check_2) + (check_3 * check_4)
         if not (a >= 0):
             swap_line(A_def, B_def, t_0, t_1, t_2, t_3)
@@ -406,10 +413,10 @@ i = 1
 triangle_for_check = list_triangle[0]
 #a = math.ceil(m)
 
-if math.ceil(m) == 1:
-    m+=1
-bc = (x_max - x_min) / math.ceil(m)
-for cnt in range(math.ceil(m)-1):
+#if round(m) == 1:
+   # m+=1
+bc = (x_max - x_min) / round(m)
+for cnt in range(round(m)):
     array_for_y = list()
     while (i < len(Other_point) and Other_point[i].x < x_min + bc * (cnt+1)):
         array_for_y.append(Other_point[i])
@@ -429,13 +436,13 @@ for cnt in range(math.ceil(m)-1):
             # проверяем, с какой стороной она пересекается
             # ищем соседний треугольник с той же стороной и идем далее
             centr = triangle_center(triangle_for_check)
-            result_intersection = judge(centr, array_for_y[j], triangle_for_check.Points[0], triangle_for_check.Points[1])
+            result_intersection = judge2(centr, array_for_y[j], triangle_for_check.Points[0], triangle_for_check.Points[1])
             flag1 = True
             if not result_intersection:
-                result_intersection = judge(centr, array_for_y[j], triangle_for_check.Points[0], triangle_for_check.Points[2])
+                result_intersection = judge2(centr, array_for_y[j], triangle_for_check.Points[0], triangle_for_check.Points[2])
                 flag2 = True
                 if not result_intersection:
-                    result_intersection = judge(centr, array_for_y[j], triangle_for_check.Points[1], triangle_for_check.Points[2])
+                    result_intersection = judge2(centr, array_for_y[j], triangle_for_check.Points[1], triangle_for_check.Points[2])
                     flag3 = True
 
             if flag3:
