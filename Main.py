@@ -64,6 +64,14 @@ def check_side(T, P):
     if p3 == 0:
         return 0, 1, 2
 
+def check_point_inPolygon(P, T):
+    c=0
+    for i in range(3):
+        if (((T.Points[i].y <= P.y and P.y<T.Points[i-1].y) or (T.Points[i-1].y <= P.y and P.y < T.Points[i].y)) and
+                (P.x > (T.Points[i-1].x - T.Points[i].x) * (P.y - T.Points[i].y) / (T.Points[i-1].y - T.Points[i].y) + T.Points[i].x)):
+            c = 1 - c
+    return c
+
 def check_point_in_triangle (A, tr_A):
     p1 = (tr_A.Points[0].x - A.x) * (tr_A.Points[1].y - tr_A.Points[0].y) - (tr_A.Points[1].x - tr_A.Points[0].x) * (tr_A.Points[0].y - A.y)
     p2 = (tr_A.Points[1].x - A.x) * (tr_A.Points[2].y - tr_A.Points[1].y) - (tr_A.Points[2].x - tr_A.Points[1].x) * (tr_A.Points[1].y - A.y)
@@ -137,6 +145,12 @@ def Intersection(A, B, C, D):
     v3 = (B.x-A.x)*(C.y-A.y)-(B.y-A.y)*(C.x-A.x)
     v4 = (B.x-A.x)*(D.y-A.y)-(B.y-A.y)*(D.x-A.x)
     return ((v1*v2<0) and (v3*v4<0))
+
+def judge(a,b,c,d):
+    if min(a.x,b.x) <= max(c.x,d.x) and min(c.y,d.y) <= max(a.y,b.y) and min(c.x,d.x) <= max(a.x,b.x) and min(a.y,b.y) <= max(c.y,d.y):
+        return True
+    return False
+
 
 
 def search_triangle(A_tr2, B1, D1):
@@ -298,16 +312,16 @@ def check_delone(A_def, B_def):
         if B_def.Points[i] not in A_def.Points:
             t_2 = B_def.Points[i]
 
-    cos_a = (t_1.x - t_0.x) * (t_3.x - t_0.x) + (t_1.y - t_0.y) * (t_3.y - t_0.y)
-    cos_b = (t_1.x - t_2.x) * (t_3.x - t_2.x) + (t_1.y - t_2.y) * (t_3.y - t_2.y)
+    cos_a = (t_1.x - t_0.x) * (t_2.x - t_0.x) + (t_1.y - t_0.y) * (t_2.y - t_0.y)
+    cos_b = (t_1.x - t_3.x) * (t_2.x - t_3.x) + (t_1.y - t_3.y) * (t_2.y - t_3.y)
     if cos_a < 0 and cos_b < 0:
         swap_line(A_def, B_def, t_0, t_1, t_2, t_3)
         return
     if (not (cos_a < 0 and cos_b < 0)) and (not (cos_a >= 0 and cos_b >= 0) and bulge(t_0, t_1, t_2, t_3)):
-        check_1 = (t_1.x - t_0.x) * (t_3.y - t_0.y) - (t_3.x - t_0.x) * (t_1.y - t_0.y)
-        check_2 = (t_3.x - t_2.x) * (t_1.x - t_2.x) + (t_3.y - t_2.y) * (t_1.y - t_2.y)
-        check_3 = (t_1.x - t_0.x) * (t_3.x - t_0.x) + (t_1.y - t_0.y) * (t_3.y - t_0.y)
-        check_4 = (t_3.x - t_2.x) * (t_1.y - t_2.y) - (t_1.x - t_2.x) * (t_3.y - t_2.y)
+        check_1 = (t_1.x - t_0.x) * (t_2.y - t_0.y) - (t_2.x - t_0.x) * (t_1.y - t_0.y)
+        check_2 = (t_2.x - t_3.x) * (t_1.x - t_3.x) + (t_2.y - t_3.y) * (t_1.y - t_3.y)
+        check_3 = (t_1.x - t_0.x) * (t_2.x - t_0.x) + (t_1.y - t_0.y) * (t_2.y - t_0.y)
+        check_4 = (t_2.x - t_3.x) * (t_1.y - t_3.y) - (t_1.x - t_3.x) * (t_2.y - t_3.y)
         a = (check_1 * check_2) + (check_3 * check_4)
         if not (a >= 0):
             swap_line(A_def, B_def, t_0, t_1, t_2, t_3)
@@ -391,10 +405,11 @@ m = abs(((0.16 * (y_max - y_min)) * len(list_point) / (x_max - x_min))**(1/2))
 i = 1
 triangle_for_check = list_triangle[0]
 #a = math.ceil(m)
-bc = (x_max - x_min) / math.ceil(m)
+
 if math.ceil(m) == 1:
     m+=1
-for cnt in range(math.ceil(m)):
+bc = (x_max - x_min) / math.ceil(m)
+for cnt in range(math.ceil(m)-1):
     array_for_y = list()
     while (i < len(Other_point) and Other_point[i].x < x_min + bc * (cnt+1)):
         array_for_y.append(Other_point[i])
@@ -404,7 +419,7 @@ for cnt in range(math.ceil(m)):
         array_for_y.sort(key=lambda k: [k.y, k.x], reverse=True)
 
     for j in range(len(array_for_y)):
-        result = check_point_in_triangle(array_for_y[j], triangle_for_check)
+        result = check_point_inPolygon(array_for_y[j], triangle_for_check)
 
         while result == 0:
             flag1 = False
@@ -414,13 +429,13 @@ for cnt in range(math.ceil(m)):
             # проверяем, с какой стороной она пересекается
             # ищем соседний треугольник с той же стороной и идем далее
             centr = triangle_center(triangle_for_check)
-            result_intersection = Intersection(centr, array_for_y[j], triangle_for_check.Points[0], triangle_for_check.Points[1])
+            result_intersection = judge(centr, array_for_y[j], triangle_for_check.Points[0], triangle_for_check.Points[1])
             flag1 = True
             if not result_intersection:
-                result_intersection = Intersection(centr, array_for_y[j], triangle_for_check.Points[0], triangle_for_check.Points[2])
+                result_intersection = judge(centr, array_for_y[j], triangle_for_check.Points[0], triangle_for_check.Points[2])
                 flag2 = True
                 if not result_intersection:
-                    result_intersection = Intersection(centr, array_for_y[j], triangle_for_check.Points[1], triangle_for_check.Points[2])
+                    result_intersection = judge(centr, array_for_y[j], triangle_for_check.Points[1], triangle_for_check.Points[2])
                     flag3 = True
 
             if flag3:
@@ -433,14 +448,19 @@ for cnt in range(math.ceil(m)):
                 number_next_triangle_for_search = search_triangle(triangle_for_check, triangle_for_check.Points[0], triangle_for_check.Points[1])
                 triangle_for_check = triangle_for_check.Triangles[number_next_triangle_for_search]
 
-            result = check_point_in_triangle(array_for_y[j], triangle_for_check)
+            result = check_point_inPolygon(array_for_y[j], triangle_for_check)
 
-        if result == 2:
+        if result == 1 and check_point_in_triangle(array_for_y[j], triangle_for_check) != 1:
             triangle_for_check = add_point_into_triangle(triangle_for_check, array_for_y[j])
 
-        if result == 1:
+        elif result == 1 and check_point_in_triangle(array_for_y[j], triangle_for_check) == 1:
             triangle_for_check = add_point_into_side(triangle_for_check, array_for_y[j])
 
+# проверка Делоне по всем построенным треугольникам
+for i in range(len(list_triangle)):
+    for j in range(3):
+        if list_triangle[i].Triangles[j] != 0:
+            check_delone(list_triangle[i], list_triangle[i].Triangles[j])
 
 for i in range(len(list_triangle)):
     X2, Y2 = array_create_for_draw(list_triangle[i].Points)
@@ -448,4 +468,6 @@ for i in range(len(list_triangle)):
 
 
 plt.gca().set_aspect('equal', adjustable='box')
+plt.xlim([0, 13])
+plt.ylim([0, 13])
 plt.show()
