@@ -330,6 +330,10 @@ def check_delone(A_def, B_def):
         if B_def.Points[i] not in A_def.Points:
             t_2 = B_def.Points[i]
 
+    if (t_1.x - t_0.x)*(t_1.y + t_0.y) + (t_2.x - t_1.x)*(t_2.y + t_1.y) + (t_3.x - t_2.x)*(t_3.y + t_2.y) + (t_0.x - t_3.x)*(t_0.y + t_3.y) < 0:
+        t_1, t_3 = t_3, t_1
+
+
     cos_a = (t_1.x - t_2.x) * (t_3.x - t_2.x) + (t_1.y - t_2.y) * (t_3.y - t_2.y)
     cos_b = (t_3.x - t_0.x) * (t_1.x - t_0.x) + (t_3.y - t_0.y) * (t_1.y - t_0.y)
     if cos_a < 0 and cos_b < 0:
@@ -422,7 +426,6 @@ m = abs(((0.16 * (y_max - y_min)) * len(list_point) / (x_max - x_min))**(1/2))
 
 i = 1
 triangle_for_check = list_triangle[0]
-
 bc = (x_max - x_min) / round(m)
 for cnt in range(round(m)):
     array_for_y = list()
