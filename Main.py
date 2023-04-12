@@ -426,6 +426,7 @@ m = abs(((0.16 * (y_max - y_min)) * len(list_point) / (x_max - x_min))**(1/2))
 
 i = 1
 triangle_for_check = list_triangle[0]
+
 bc = (x_max - x_min) / round(m)
 for cnt in range(round(m)):
     array_for_y = list()
@@ -474,7 +475,6 @@ for cnt in range(round(m)):
         elif result == 1 and check_point_in_triangle(array_for_y[j], triangle_for_check) == 1:
             triangle_for_check = add_point_into_side(triangle_for_check, array_for_y[j])
 
-# проверка Делоне по всем построенным треугольникам
 for i in range(len(list_triangle)):
     for j in range(3):
         if list_triangle[i].Triangles[j] != 0:
